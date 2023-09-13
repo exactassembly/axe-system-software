@@ -25,7 +25,7 @@
 					"../../../workspaces/yocto-vscode-howto/meta-howto"
 				],
 			"local.conf": [
-				"MACHINE                    = 'qemu'           ",
+				"MACHINE                    = 'qemux86'           ",
 				"ENABLE_UART                = '1'                      "
 			]
 		},

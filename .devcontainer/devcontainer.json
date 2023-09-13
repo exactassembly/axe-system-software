@@ -6,15 +6,18 @@
         "ghcr.io/exactassembly/yocto-devcontainer-features/yocto-cooker:1" : {
                 "version": "1.3.1"
             }
-        }
     },
     "remoteUser": "vscode",
     "containerEnv": {
-        "COOKER_MENU_DIR" : "/workspaces/dfs-system-software",
+        "COOKER_MENU_DIR" : "/workspaces/yocto-vscode-howto",
         "COOKER_USE_DL_CACHE" : "true",
         "COOKER_USE_SSTATE_CACHE" : "true"
     },
-    "postCreateCommand": "sudo chown -R vscode:vscode /workspaces/",
+    "postCreateCommand": {
+        "workspace": "sudo chown -R vscode:vscode /workspaces/",
+        "dl-cache": "sudo chown -R vscode:vscode /var/lib/dl-cache",
+        "sstate-cache": "sudo chown -R vscode:vscode /var/lib/sstate-cache"
+    },
     "customizations": {
         "vscode": {
             "extensions": [

@@ -6,7 +6,7 @@
         {
             "label": "Cooker-init",
             "type": "shell",
-            "command": "/workspaces/yocto-vscode-howto/.vscode/cooker-init.sh",
+            "command": "/workspaces/yocto-cl-mitysom-howto/.vscode/cooker-init.sh",
             "options": {
                 "cwd": "/home/vscode"
             }

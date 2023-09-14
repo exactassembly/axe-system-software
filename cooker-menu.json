@@ -6,7 +6,9 @@
 		{ "url": "git://git.yoctoproject.org/poky", 
 					"branch": "kirkstone", "rev":"kirkstone-4.0.10" },
 		{ "url": "git://git.openembedded.org/meta-openembedded", 
-					"branch": "kirkstone", "rev":"4da92ed9be41734f6ced46b981958e2e868cbff2" }
+					"branch": "kirkstone", "rev":"4da92ed9be41734f6ced46b981958e2e868cbff2" },
+		{ "url": "git://git.yoctoproject.org/meta-intel-fpga",
+					"branch": "kirkstone", "rev":"74e4dae14953f6c7ea6d49df4f8477bcb71326b2" }
 	],
 
 	"layers" : [
@@ -19,15 +21,17 @@
 	],
 
 	"builds" : {
-		"qemu": {
-			"target": "core-image-minimal",
-			"layers" : [
-					"../../../workspaces/yocto-cl-mitysom-howto/meta-howto"
-				],
+		"mitysom": {
+			"target": "sdimage-mitysom5cse",
+			"layers": [
+				"meta-intel-fpga",
+				"../../../workspaces/yocto-cl-mitysom-howto/meta-cl-mitysom",
+				"../../../workspaces/yocto-cl-mitysom-howto/meta-howto"
+			],
 			"local.conf": [
-				"MACHINE                    = 'qemux86'           ",
-				"ENABLE_UART                = '1'                      "
+				"MACHINE                    = 'mitysom5cse'      ",
+				"ENABLE_UART                = '1'                "
 			]
-		},
+		}
 	}
 }

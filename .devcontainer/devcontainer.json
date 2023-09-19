@@ -9,7 +9,7 @@
     },
     "remoteUser": "vscode",
     "containerEnv": {
-        "COOKER_MENU_DIR" : "/workspaces/yocto-vscode-howto",
+        "COOKER_MENU_DIR" : "/workspaces/yocto-cl-mitysom-howto",
         "COOKER_USE_DL_CACHE" : "true",
         "COOKER_USE_SSTATE_CACHE" : "true"
     },

@@ -17,7 +17,7 @@
     "postCreateCommand": {
         "dl-cache": "sudo chmod -R 777 /var/lib/dl-cache",
         "sstate-cache": "sudo chmod -R 777 /var/lib/sstate-cache",
-        "git": "sudo runuser -l vscode -c 'git config --global --add safe.directory /workspaces' "
+        "git": "sudo runuser -l vscode -c 'git config --global --add safe.directory *' "
 
     },
     

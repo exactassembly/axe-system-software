@@ -25,8 +25,8 @@
 			"target": "sdimage-mitysom5cse",
 			"layers": [
 				"meta-intel-fpga",
-				"../../../workspaces/yocto-cl-mitysom-howto/meta-cl-mitysom",
-				"../../../workspaces/yocto-cl-mitysom-howto/meta-howto"
+				"../../../workspaces/meta-cl-mitysom",
+				"../../../workspaces/meta-howto"
 			],
 			"local.conf": [
 				"MACHINE                    = 'mitysom5cse'      ",

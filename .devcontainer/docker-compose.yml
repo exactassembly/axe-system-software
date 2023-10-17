@@ -2,7 +2,7 @@ version: "2.0"
 
 volumes:
   yocto-cooker-sstate-cache: 
-    name: 'yocto-cooker-state-cache'
+    name: 'yocto-cooker-sstate-cache'
   yocto-cooker-dl-cache:
     name: 'yocto-cooker-dl-cache'
 

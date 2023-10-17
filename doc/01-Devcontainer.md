@@ -1,6 +1,6 @@
 # Devcontainer structure
 The exact format of the files used to control spinup of the Docker container
-can be found in the (devcontainers specification)[https://containers.dev/], but
+can be found in the [devcontainers specification](https://containers.dev/), but
 it can be useful to understand why these components are used.
 
 ## Dockerfile

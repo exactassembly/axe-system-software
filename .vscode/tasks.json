@@ -6,7 +6,7 @@
         {
             "label": "Cooker-init",
             "type": "shell",
-            "command": "/workspaces/yocto-cl-mitysom-howto/.vscode/cooker-init.sh",
+            "command": "/workspaces/.vscode/cooker-init.sh",
             "options": {
                 "cwd": "/home/vscode"
             }
@@ -21,6 +21,7 @@
         },
         {
             "label": "Cooker-broil",
+            "group": "build",
             "type": "shell",
             "command": "cooker update; cooker generate; cooker build",
             "options": {

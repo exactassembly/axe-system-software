@@ -8,16 +8,19 @@
             }
     },
     "remoteUser": "vscode",
+    "workspaceFolder": "/workspaces",
     "containerEnv": {
-        "COOKER_MENU_DIR" : "/workspaces/yocto-cl-mitysom-howto",
+        "COOKER_MENU_DIR" : "/workspaces",
         "COOKER_USE_DL_CACHE" : "true",
         "COOKER_USE_SSTATE_CACHE" : "true"
     },
     "postCreateCommand": {
-        "workspace": "sudo chown -R vscode:vscode /workspaces/",
-        "dl-cache": "sudo chown -R vscode:vscode /var/lib/dl-cache",
-        "sstate-cache": "sudo chown -R vscode:vscode /var/lib/sstate-cache"
+        "dl-cache": "sudo chmod -R 777 /var/lib/dl-cache",
+        "sstate-cache": "sudo chmod -R 777 /var/lib/sstate-cache",
+        "git": "sudo runuser -l vscode -c 'git config --global --add safe.directory /workspaces' "
+
     },
+    
     "customizations": {
         "vscode": {
             "extensions": [

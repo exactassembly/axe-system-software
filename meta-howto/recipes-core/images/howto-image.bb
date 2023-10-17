@@ -1,6 +1,6 @@
 
 CORE_IMAGE_EXTRA_INSTALL += "\
-    packagegroup-sysdbgtools
+    packagegroup-sysdbgtools \
 "
 
 EXTRA_IMAGE_FEATURES += "debug-tweaks"

@@ -36,14 +36,15 @@
 		},
 
 		"mitysoma10s": {
-			"target": "howto-image",
+			"target": "sdimage-mitysoma10s",
 			"layers": [
 				"meta-intel-fpga",
 				"../../../workspaces/meta-cl-mitysom",
 				"../../../workspaces/meta-howto"
 			],
 			"local.conf": [
-				"MACHINE                    = 'mitysoma10sdsc'      ",
+				"MACHINE                    = 'mitysoma10s'      ",
+				"APPLICATION_NAME           = 'howto'            ",
 				"ENABLE_UART                = '1'            "
 			]
 		}

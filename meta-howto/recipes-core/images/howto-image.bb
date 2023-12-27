@@ -37,12 +37,6 @@ rootfs_tuning_boot() {
     rm ${IMAGE_ROOTFS}/etc/rc5.d/S15mountnfs.sh
 }
 
-IMAGE_BOOT_FILES += " \
-        fit_spl_fpga.itb \
-        mitysom_a10s.core.rbf \
-        mitysom_a10s.periph.rbf \
-        "
-
 IMAGE_ROOTFS_SIZE ?= "8192"
 IMAGE_ROOTFS_EXTRA_SPACE:append = "${@bb.utils.contains("DISTRO_FEATURES", "systemd", " + 4096", "" ,d)}"
 export IMAGE_BASENAME = "application-rootfs"

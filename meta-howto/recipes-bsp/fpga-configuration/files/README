@@ -1,0 +1,5 @@
+put the split rbf files and hps.xml file generated from quartus in this directory and named in the following manner:
+
+*.core.rbf -> mitysom_a10s.core.rbf
+*.periph.rbf -> mitysom_a10s.periph.rbf
+hps.xml -> mitysom_a10s_hps.xml

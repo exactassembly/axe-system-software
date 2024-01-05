@@ -45,7 +45,8 @@
 			"local.conf": [
 				"MACHINE                    = 'mitysoma10s'      ",
 				"APPLICATION_NAME           = 'howto'            ",
-				"ENABLE_UART                = '1'            "
+				"ENABLE_UART                = '1'            ",
+				"USER_KERNEL_DEVICETREE     = 'mitysom_a10s_user_empty.dtb' "
 			]
 		}
 	}

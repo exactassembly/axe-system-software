@@ -21,7 +21,7 @@
 	],
 
 	"builds" : {
-		"mitysom": {
+		"mitysom5cse": {
 			"target": "sdimage-mitysom5cse",
 			"layers": [
 				"meta-intel-fpga",
@@ -31,7 +31,22 @@
 			"local.conf": [
 				"MACHINE                    = 'mitysom5cse'      ",
 				"APPLICATION_NAME           = 'howto'            ",
-				"ENABLE_UART                = '1'                "
+				"ENABLE_UART                = '1'            "
+			]
+		},
+
+		"mitysoma10s": {
+			"target": "sdimage-mitysoma10s",
+			"layers": [
+				"meta-intel-fpga",
+				"../../../workspaces/meta-cl-mitysom",
+				"../../../workspaces/meta-howto"
+			],
+			"local.conf": [
+				"MACHINE                    = 'mitysoma10s'      ",
+				"APPLICATION_NAME           = 'howto'            ",
+				"ENABLE_UART                = '1'            ",
+				"USER_KERNEL_DEVICETREE     = 'mitysom_a10s_user_empty.dtb' "
 			]
 		}
 	}

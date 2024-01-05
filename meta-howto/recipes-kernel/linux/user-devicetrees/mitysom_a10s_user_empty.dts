@@ -1,0 +1,8 @@
+#include "mitysom_a10s_devkit.dtsi"
+// Empty dev-tree for testing
+
+&i2c0 {
+    temp@48 {
+        label = "temp48 label";
+    };
+};

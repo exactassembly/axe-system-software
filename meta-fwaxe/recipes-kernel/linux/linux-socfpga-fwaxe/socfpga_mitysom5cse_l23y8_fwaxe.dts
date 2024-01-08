@@ -1,0 +1,122 @@
+#include <dt-bindings/interrupt-controller/irq.h>
+#include "socfpga_mitysom5cse_l23y8.dtsi"
+
+/ {
+	aliases {
+		/* this allow the ethaddr uboot environmnet variable contents
+		 * to be added to the gmac1 device tree blob.
+		 */
+		ethernet0 = &gmac1;
+	};
+        icore_5vdc: regulator-vref {
+                compatible = "regulator-fixed";
+                regulator-name = "icore-vref-5vdc";
+                regulator-min-microvolt = <5000000>;
+                regulator-max-microvolt = <5000000>;
+                regulator-always-on;
+        };
+};
+
+// no functionality in the FPGA gates
+&hps_lw_bus {
+	status = "okay";
+
+        sysid_qsys: sysid@00 {
+                compatible = "altr,sysid-19.1", "altr,sysid-1.0";
+                reg = <0x00000000 0x00000008>;
+                id = <4273603590>;	/* embeddedsw.dts.params.id type NUMBER */
+                timestamp = <1602170500>;	/* embeddedsw.dts.params.timestamp type NUMBER */
+        }; //end sysid@00 (sysid_qsys)
+
+
+        HSMC1_TX: hsmc1_tx@20 {
+                compatible = "altr,pio-1.0";
+                reg = <0x0020 0x20>;
+                altr,ngpio = <32>;
+                resetvalue = <0>;       /* embeddedsw.dts.params.resetvalue type NUMBER */
+                #gpio-cells = <2>;
+                gpio-controller;
+        }; //end hsmc1_tx@20 
+
+        HSMC1_RX: hsmc1_rx@40 {
+                compatible = "altr,pio-1.0";
+                reg = <0x0040 0x20>;
+                interrupts = <0 40 4>;
+                altr,ngpio = <32>;
+                #gpio-cells = <2>;
+                gpio-controller;
+                altr,interrupt-type = <IRQ_TYPE_LEVEL_HIGH>;
+                #interrupt-cells = <1>;
+                interrupt-controller;
+        }; //end hsmc1_rx40 
+
+};
+
+&gmac1 {
+	status = "okay";
+	phy-mode = "rgmii";
+        phy-handle = <&eth_phy0>;
+};
+
+&mdio0 {
+
+                 eth_phy0: ethernet-phy@0 {
+                         /* PHY address; no autodetection when using phy-handle */
+                         reg = <3>;
+ 
+                         /*
+                          * All skews are offset since hardware skew values for
+                          * the ksz9031 range from a negative skew to a positive
+                          * skew. See the micrel-ksz90x1.txt Documentation file
+                          * for details.
+                          */
+ 
+                         /* KSZ9031 */
+                         txd0-skew-ps = <0>; /* -420ps */
+                         txd1-skew-ps = <0>; /* -420ps */
+                         txd2-skew-ps = <0>; /* -420ps */
+                         txd3-skew-ps = <0>; /* -420ps */
+                         rxd0-skew-ps = <420>; /* 0ps */
+                         rxd1-skew-ps = <420>; /* 0ps */
+                         rxd2-skew-ps = <420>; /* 0ps */
+                         rxd3-skew-ps = <420>; /* 0ps */
+                         txen-skew-ps = <0>; /* -420ps */
+                         txc-skew-ps = <1860>; /* 960ps */
+                         rxdv-skew-ps = <420>; /* 0ps */
+                         rxc-skew-ps = <1680>; /* 780ps */
+ 
+                         /* KSZ9131 */
+                         txd0-skew-psec = <(-700)>;
+                         txd1-skew-psec = <(-700)>;
+                         txd2-skew-psec = <(-700)>;
+                         txd3-skew-psec = <(-700)>;
+                         rxd0-skew-psec = <0>;
+                         rxd1-skew-psec = <0>;
+                         rxd2-skew-psec = <0>;
+                         rxd3-skew-psec = <0>;
+                         txen-skew-psec = <(-700)>;
+                         txc-skew-psec = <2400>;
+                         rxdv-skew-psec = <0>;
+                         rxc-skew-psec = <2400>;
+ 
+                         /* Combination of Cyclone V hard EMAC and KSZ9131
+                          * causes almost all traffic to get lost after
+                          * re-establishing a lost link (no problems have
+                          * been observed during the first link-up after
+                          * boot); most TX packets are not received by the
+                          * link partner, and no RX packets are received by
+                          * the C5. Disabling EEE is the only way we've found
+                          * to (apparently) fix this. Note that the major
+                          * difference from the KSZ9031 (which does work
+                          * with the C5) is that the KSZ9031 doesn't support
+                          * EEE at all, which seems to corroborate the fix.
+                          * Since the drivers involved and the C5's hard
+                          * EMAC all claim to support EEE, we're not sure
+                          * why it seems to cause issues.
+                          *
+                          * Intel forum post: https://community.intel.com/t5/Programmable-Devices/Arria-10-HPS-EMAC-with-KSZ9131-PHY/m-p/1500535
+                          */
+                         eee-broken-100tx;
+                         eee-broken-1000t;
+                 };
+        };

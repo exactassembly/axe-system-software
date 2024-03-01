@@ -20,7 +20,7 @@
     "postCreateCommand": {
         "dl-cache": "sudo chmod -R 777 /var/lib/dl-cache",
         "sstate-cache": "sudo chmod -R 777 /var/lib/sstate-cache",
-        "git": "sudo runuser -l vscode -c 'git config --global --add safe.directory ${containerWorkspaceFolder} && cd ${containerWorkspaceFolder} && if [ -n \"$(git submodule)\" ]; then git submodule update --init ; fi' ",
+        "git": "sudo runuser -l vscode -c 'git config --global --add safe.directory '*' && cd ${containerWorkspaceFolder} && if [ -n \"$(git submodule)\" ]; then git submodule update --init ; fi' ",
         "symlink": "test ! -d /home/vscode/yocto-layers && (mkdir /home/vscode/yocto-layers) ; for f in ${containerWorkspaceFolder}/meta-*; do sudo ln -s $f /home/vscode/yocto-layers/ ; done"
 
     },

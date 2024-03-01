@@ -26,7 +26,8 @@
 			"layers": [
 				"meta-intel-fpga",
 				"../../../workspaces/meta-cl-mitysom",
-				"../../../workspaces/meta-fwaxe"
+				"../../../workspaces/meta-fwaxe",
+				"../../../workspaces/meta-howto"
 			],
 			"local.conf": [
 				"MACHINE                    = 'mitysom5cse'      ",

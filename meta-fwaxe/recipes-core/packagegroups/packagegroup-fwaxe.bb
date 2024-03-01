@@ -14,4 +14,5 @@ RDEPENDS:${PN} = "\
     libgpiod-tools \
     openocd \
     minicom \
+    tps55288-module \
 "

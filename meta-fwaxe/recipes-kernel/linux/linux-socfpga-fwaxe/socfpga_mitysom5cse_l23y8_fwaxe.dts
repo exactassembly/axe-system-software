@@ -1,4 +1,6 @@
 #include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/iio/adi,ad5592r.h>
 #include "socfpga_mitysom5cse_l23y8.dtsi"
 
 / {
@@ -8,11 +10,11 @@
 		 */
 		ethernet0 = &gmac1;
 	};
-        icore_5vdc: regulator-vref {
+        adcdac_3v3: adcdac-vref {
                 compatible = "regulator-fixed";
-                regulator-name = "icore-vref-5vdc";
-                regulator-min-microvolt = <5000000>;
-                regulator-max-microvolt = <5000000>;
+                regulator-name = "adcdac-vref-3v3";
+                regulator-min-microvolt = <3300000>;
+                regulator-max-microvolt = <3300000>;
                 regulator-always-on;
         };
 };
@@ -24,99 +26,129 @@
         sysid_qsys: sysid@00 {
                 compatible = "altr,sysid-19.1", "altr,sysid-1.0";
                 reg = <0x00000000 0x00000008>;
-                id = <4273603590>;	/* embeddedsw.dts.params.id type NUMBER */
-                timestamp = <1602170500>;	/* embeddedsw.dts.params.timestamp type NUMBER */
+                id = <4273603590>;	
+                timestamp = <1602170500>;
         }; //end sysid@00 (sysid_qsys)
 
-
-        HSMC1_TX: hsmc1_tx@20 {
-                compatible = "altr,pio-1.0";
-                reg = <0x0020 0x20>;
-                altr,ngpio = <32>;
-                resetvalue = <0>;       /* embeddedsw.dts.params.resetvalue type NUMBER */
-                #gpio-cells = <2>;
-                gpio-controller;
-        }; //end hsmc1_tx@20 
-
-        HSMC1_RX: hsmc1_rx@40 {
+        OCD_GPIO: ocd_gpio@0x40 {
                 compatible = "altr,pio-1.0";
                 reg = <0x0040 0x20>;
                 interrupts = <0 40 4>;
-                altr,ngpio = <32>;
+                altr,ngpio = <7>;
                 #gpio-cells = <2>;
                 gpio-controller;
                 altr,interrupt-type = <IRQ_TYPE_LEVEL_HIGH>;
                 #interrupt-cells = <1>;
                 interrupt-controller;
-        }; //end hsmc1_rx40 
+        }; //end ocd_gpio@0x40 
+
+        target_uart0: target_serial@0x0100 {
+                compatible = "altr,uart-19.1", "altr,uart-1.0";
+                reg = <0x00000100 0x00000020>;
+                interrupt-parent = <&intc>;
+                interrupts = <0 41 4>;
+                clock-frequency = <100000000>;  
+                current-speed = <115200>; 
+        }; //end serial@0x100000040 (hps_nios_uart)
+
+        POWER_I2C: power_i2c@0x00000140 {
+                compatible = "altr,softip-i2c-v1.0";
+                reg = <0x00000140 0x00000040>;
+                interrupt-parent = <&intc>;
+                interrupts = <0 42 4>;
+                clocks = <&h2f_user0_clk>;
+                #address-cells = <1>;
+                #size-cells = <0>;
+                target_vreg: tps55288@0 {
+                        compatible = "tps55288";
+                        reg = <0x74>;
+                };
+        }; //end power_i2c@0x00000140 (SLOT1_I2C)
+
+        ADCDAC_RESET: adcdac_reset@200 {
+                compatible = "altr,pio-1.0";
+                reg = <0x0200 0x20>;
+                altr,ngpio = <1>;
+                resetvalue = <0>;
+                #gpio-cells = <2>;
+                gpio-controller;
+        }; //end adcdac_reset@20 
+
+        ADCDAC_SPI: adcdac_spi@0x0240 {
+                compatible = "altr,spi-20.1", "altr,spi-1.0";
+                reg = <0x00000240 0x00000020>;
+                interrupt-parent = <&intc>;
+                interrupts = <0 43 4>;
+                clocks = <&h2f_user0_clk>;
+                num-cs = <1>;
+
+                // LTC2445 ADC @ 0 
+                ad5592r@0{
+                        compatible = "adi,ad5592r";
+                        #size-cells = <0>;
+                        #address-cells = <1>;
+                        #gpio-cells = <2>;
+                        reg = <0>;
+
+                        spi-max-frequency = <100000>;
+//                        spi-cpol;
+
+                        vref-supply = <&adcdac_3v3>;
+                        reset-gpios = <&ADCDAC_RESET 0 GPIO_ACTIVE_LOW>;
+
+                        channel@0 {
+                                reg = <0>;
+                                adi,mode = <CH_MODE_ADC>;
+                        };                        
+                };
+
+//                /* LTC2445 ADC @ 0 */
+//                ad5592r@0{
+//                        compatible = "analogdevices,ad5592r";
+//                        reg = <0>;
+//                        spi-max-frequency = <100000>;
+//                };
+
+        }; //end adcdac_spi@0x0240 (ADCDAC_SPI)
+
+	diag_led: diag_led@0x1000 {
+		compatible = "altr,pio-20.1", "altr,pio-1.0";
+		reg = <0x00001000 0x00000010>;
+                altr,ngpio = <2>;
+		resetvalue = <3>;
+		#gpio-cells = <2>;
+		gpio-controller;
+	}; //end gpio@0x1000 (diag_led)
+
+        MB_I2C: mb_i2c@0x1040 {
+                compatible = "altr,softip-i2c-v1.0";
+                reg = <0x0001040 0x00000040>;
+                interrupt-parent = <&intc>;
+                interrupts = <0 44 4>;
+                clocks = <&h2f_user0_clk>;
+                clock-frequency = <100000>;
+                #address-cells = <1>;
+                #size-cells = <0>;
+                fifo-size = <4>;
+
+                eeprom@50 {
+                        compatible = "fmd,24c16";
+                        reg = <0x50>;
+                };
+
+        }; // end mb_i2c@0x6400
 
 };
 
 &gmac1 {
-	status = "okay";
-	phy-mode = "rgmii";
+	phy-mode = "rgmii-id";
         phy-handle = <&eth_phy0>;
 };
 
 &mdio0 {
-
-                 eth_phy0: ethernet-phy@0 {
-                         /* PHY address; no autodetection when using phy-handle */
-                         reg = <3>;
- 
-                         /*
-                          * All skews are offset since hardware skew values for
-                          * the ksz9031 range from a negative skew to a positive
-                          * skew. See the micrel-ksz90x1.txt Documentation file
-                          * for details.
-                          */
- 
-                         /* KSZ9031 */
-                         txd0-skew-ps = <0>; /* -420ps */
-                         txd1-skew-ps = <0>; /* -420ps */
-                         txd2-skew-ps = <0>; /* -420ps */
-                         txd3-skew-ps = <0>; /* -420ps */
-                         rxd0-skew-ps = <420>; /* 0ps */
-                         rxd1-skew-ps = <420>; /* 0ps */
-                         rxd2-skew-ps = <420>; /* 0ps */
-                         rxd3-skew-ps = <420>; /* 0ps */
-                         txen-skew-ps = <0>; /* -420ps */
-                         txc-skew-ps = <1860>; /* 960ps */
-                         rxdv-skew-ps = <420>; /* 0ps */
-                         rxc-skew-ps = <1680>; /* 780ps */
- 
-                         /* KSZ9131 */
-                         txd0-skew-psec = <(-700)>;
-                         txd1-skew-psec = <(-700)>;
-                         txd2-skew-psec = <(-700)>;
-                         txd3-skew-psec = <(-700)>;
-                         rxd0-skew-psec = <0>;
-                         rxd1-skew-psec = <0>;
-                         rxd2-skew-psec = <0>;
-                         rxd3-skew-psec = <0>;
-                         txen-skew-psec = <(-700)>;
-                         txc-skew-psec = <2400>;
-                         rxdv-skew-psec = <0>;
-                         rxc-skew-psec = <2400>;
- 
-                         /* Combination of Cyclone V hard EMAC and KSZ9131
-                          * causes almost all traffic to get lost after
-                          * re-establishing a lost link (no problems have
-                          * been observed during the first link-up after
-                          * boot); most TX packets are not received by the
-                          * link partner, and no RX packets are received by
-                          * the C5. Disabling EEE is the only way we've found
-                          * to (apparently) fix this. Note that the major
-                          * difference from the KSZ9031 (which does work
-                          * with the C5) is that the KSZ9031 doesn't support
-                          * EEE at all, which seems to corroborate the fix.
-                          * Since the drivers involved and the C5's hard
-                          * EMAC all claim to support EEE, we're not sure
-                          * why it seems to cause issues.
-                          *
-                          * Intel forum post: https://community.intel.com/t5/Programmable-Devices/Arria-10-HPS-EMAC-with-KSZ9131-PHY/m-p/1500535
-                          */
-                         eee-broken-100tx;
-                         eee-broken-1000t;
-                 };
+        eth_phy0: ethernet-phy@0 {
+                compatible = "ethernet-phy-id0007.0771";
+                device_type = "ethernet-phy";
+                reg = <0>;
         };
+};

@@ -4,9 +4,14 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Update Meta Symlinks",
+            "type": "shell",
+            "command": "for f in ${CONTAINER_WORKSPACE_FOLDER}/meta-*; do if [ ! -h /home/vscode/yocto-layers/$(basename $f) -a ! -e /home/vscode/yocto-layers/$(basename $f) ]; then ln -s $f /home/vscode/yocto-layers/; fi ; done",
+        },
+        {
             "label": "Cooker-init",
             "type": "shell",
-            "command": "/workspaces/.vscode/cooker-init.sh",
+            "command": "${CONTAINER_WORKSPACE_FOLDER}/.vscode/cooker-init.sh",
             "options": {
                 "cwd": "/home/vscode"
             }
@@ -27,7 +32,7 @@
             "options": {
                 "cwd": "/home/vscode"
             },
-            "dependsOn": "Cooker-init"
+            "dependsOn": ["Cooker-init", "Update Meta Symlinks"]
         },
         {
             "label": "Cooker-download",

@@ -11,7 +11,7 @@ COOKER_MENU_DIR="${COOKER_MENU_DIR:-"/workspace"}"
 COOKER_MENU_FILE="${COOKER_MENU_FILE:-"cooker-menu.json"}"
 
 COOKER_SSTATE_OPT=""
-if [ "${COOKER_USE_DL_CACHE=}" != "" ]; then
+if [ "${COOKER_USE_SSTATE_CACHE=}" != "" ]; then
     COOKER_SSTATE_OPT="-s ${COOKER_SSTATE_CACHE_DIR}"
 fi
 

@@ -25,9 +25,9 @@
 			"target": "sdimage-mitysom5cse",
 			"layers": [
 				"meta-intel-fpga",
-				"../../../workspaces/meta-cl-mitysom",
-				"../../../workspaces/meta-fwaxe",
-				"../../../workspaces/meta-howto"
+				"meta-cl-mitysom",
+				"meta-fwaxe",
+				"meta-howto"
 			],
 			"local.conf": [
 				"MACHINE                    = 'mitysom5cse'      ",

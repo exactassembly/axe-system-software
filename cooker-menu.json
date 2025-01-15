@@ -17,6 +17,7 @@
 		"poky/meta-yocto-bsp",
 		"meta-openembedded/meta-oe",
 		"meta-openembedded/meta-python",
+		"meta-openembedded/meta-networking",
 		"meta-openembedded/meta-multimedia"
 	],
 

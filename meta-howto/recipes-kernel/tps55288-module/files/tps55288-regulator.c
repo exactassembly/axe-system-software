@@ -143,6 +143,35 @@ static int tps55288_dcdc_set_voltage_sel(struct regulator_dev *dev, unsigned sel
     return 0;
 }
 
+static int tps55288_dcdc_get_ilim(struct regulator_dev *dev) {
+    struct tps55288_chip *tps = rdev_get_drvdata(dev);
+    int vsel;
+    unsigned int data;
+    int ret;
+
+    ret = regmap_read(tps->regmap, TPS55288_IOUT_LIMIT_REG, &data);
+    if(ret < 0) {
+        dev_err(tps->dev, "%s(): register %d read failed with err %d\n", __func__, TPS55288_IOUT_LIMIT_REG, ret);
+        return ret;
+    }
+    
+    data = data & TPS55288_ILIM_SETTING_MASK;
+    return data;
+}
+
+static int tps55288_dcdc_set_ilim(struct regulator_dev *dev, int min_uA, int max_uA) {
+    struct tps55288_chip *tps = rdev_get_drvdata(dev);
+    int ret;
+    
+    ret = regmap_update_bits(tps->regmap, TPS55288_IOUT_LIMIT_REG, TPS55288_ILIM_SETTING_MASK, max_uA);
+    if(ret < 0) {
+        dev_err(tps->dev, "%s(): register %d update failed with err %d\n", __func__, TPS55288_IOUT_LIMIT_REG, ret);
+        return ret;
+    }    
+
+    return 0;
+}
+
 static int tps55288_enable(struct regulator_dev *dev) {
     struct tps55288_chip *tps = rdev_get_drvdata(dev);
     int ret;
@@ -186,6 +215,8 @@ static int tps55288_is_enabled(struct regulator_dev *dev) {
 static const struct regulator_ops tps55288_dcdc_ops = {
     .get_voltage_sel    = tps55288_dcdc_get_voltage_sel,
     .set_voltage_sel    = tps55288_dcdc_set_voltage_sel,
+    .set_current_limit  = tps55288_dcdc_set_ilim,
+    .get_current_limit  = tps55288_dcdc_get_ilim,
     .list_voltage       = regulator_list_voltage_linear,
     .map_voltage        = regulator_map_voltage_linear,
     .enable             = tps55288_enable,
@@ -205,6 +236,12 @@ static int tps55288_init_dcdc(struct tps55288_chip* tps, struct tps55288_regulat
         return ret;
     }
 
+    // enable current limit
+    ret = regmap_update_bits(tps->regmap, TPS55288_IOUT_LIMIT_REG, TPS55288_ILIM_EN_MASK, TPS55288_ILIM_EN_MASK);
+    if(ret < 0) {
+        dev_err(tps->dev, "%s(): register %d update failed with err %d\n", __func__, TPS55288_IOUT_LIMIT_REG, ret);
+        return ret;
+    }
 
     // disable output
     ret = regmap_update_bits(tps->regmap, TPS55288_MODE_REG, TPS55288_OUTPUT_EN_MASK, 0x00);

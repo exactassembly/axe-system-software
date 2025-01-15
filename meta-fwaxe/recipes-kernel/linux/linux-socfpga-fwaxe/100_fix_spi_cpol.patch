@@ -1,0 +1,17 @@
+diff --git a/drivers/spi/spi-altera-platform.c b/drivers/spi/spi-altera-platform.c
+index 65147aae82a1..c917a010a071 100644
+--- a/drivers/spi/spi-altera-platform.c
++++ b/drivers/spi/spi-altera-platform.c
+@@ -60,11 +60,11 @@ static int altera_spi_probe(struct platform_device *pdev)
+                }
+ 
+                master->num_chipselect = pdata->num_chipselect;
+-               master->mode_bits = pdata->mode_bits;
++               master->mode_bits = pdata->mode_bits | SPI_CPOL;
+                master->bits_per_word_mask = pdata->bits_per_word_mask;
+        } else {
+                master->num_chipselect = 16;
+-               master->mode_bits = SPI_CS_HIGH;
++               master->mode_bits = SPI_CS_HIGH | SPI_CPOL;
+                master->bits_per_word_mask = SPI_BPW_RANGE_MASK(1, 16);
+        }

@@ -1,0 +1,115 @@
+// Clear( )
+//      Returns true when the bus is free. Tries to resolve SDA hold down issue.
+// Read(address)
+//      Returns true when acknowledged otherwise false.
+// Read(address, count of bytes)
+//      Returns the read bytes array from the specified address.
+// Read(address, [sub address byte1, byte2...], count of bytes)
+//      Returns the read bytes array from the specified device address and subaddress using repeated start.
+// Write(address)
+//      Returns true when acknowledged otherwise false.
+// Write(address, [byte1, byte2... ])
+// Write(address, byte1, byte2...)
+//      Returns zero on success or -1 on address NAK or the NAK byte index.
+// SlaveConfig(address, wr-bytes, [rd-byte1,rd-byte2,...], repeat)
+//      address: 7bit format and for any use -1
+//      wr-bytes: number of written bytes to ACK, 0 will NACK address write, negative will ACK unlimited bytes
+//      [rd-byte#]: array of bytes to return on read, empty array will NAK read
+//      repeat: true to respond multiple times, false for once, to stop after the first I2C stop
+// SlaveStart(address, WR-ACK, RD-ACK)
+//      Start slave pausing for software processing after each word.
+// SlaveStop()
+//      Stop started or configured slave.
+// SlaveStatus() [id, data, ack]
+//      id: 0 nop, 1 write, 2 read, 3 data, others error
+//      data: 7bit address or byte
+//      ack: true for ACK and false for NACK.
+// SlaveReceive(ack)
+//      Continue to receive and acknowledge or NACK.
+// SlaveRespond(byte, ack)
+//      Respond with data and acknowledge or NACK.
+
+//return ((0xff & 0x03) << 8) | 0xff;
+
+function set_enable(_mode, _en) {
+    return (_mode & 0x7f) | ((_en << 7) & 0x80);
+}
+
+function set_bit(_byte, _bit, _bit_val) {
+    return (_byte & (0xff ^ (0x1 << _bit))) | ((_bit_val & 0x1) << _bit);
+}
+
+const addr = 0x74;
+
+if(Clear()!=true) return "I2C bus error, check pull-ups";
+if(Write(addr)!=true) return "Device NACK";
+//return "Device ACK";
+wait(0.1);
+
+//return Read(addr, 0x07, 1);
+
+var vref_lsb = Read(addr, 0x00, 1);
+wait(0.1);
+var vref_msb = Read(addr, 0x01, 1);
+wait(0.1);
+
+var vref = (((vref_msb & 0x03) << 8) | vref_lsb);
+
+var mode = Read(addr, 0x06, 1);
+Write(addr, 0x04, 3);
+var fb = Read(addr, 0x04, 1);
+var intfbr = fb & 0x03;
+var v_step = (intfbr + 1) * 5
+
+var fb_ratio;
+switch(v_step) {
+    case 20:
+        fb_ratio = 0.0564;
+        break;
+    case 15:
+        fb_ratio = 0.0752;
+        break;
+    case 10:
+        fb_ratio = 0.1128;
+        break;
+    case 5:
+        fb_ratio = 0.2256;
+        break;
+}
+
+//var vout = (vref + 45) * v_step / 1000;
+
+var vout = (vref*1.129 + 45) / fb_ratio / 1000;
+
+// Try to output 10V
+var vout_goal = 3.3; // in volts
+var vref_goal = (((vout_goal * 1000.0) * fb_ratio) - 45) / 1.129; // in mV
+// We need an int in order to properly set our vref, so round vref_goal to a whole number
+vref_goal = round(vref_goal);
+
+var rg_lsb = vref_goal & 0xFF;
+var rg_msb = (vref_goal >> 8) & 0x03;
+//var rg_lsb=0;
+//var rg_msb=0;
+
+// Set vref to get our desired output
+Write(addr, 0x00, rg_lsb);
+Write(addr, 0x01, rg_msb);
+
+wait(2);
+
+var new_mode = set_bit(mode, 7,0x01);
+new_mode = set_bit(new_mode, 4, 0x00);
+Write(addr, 0x06, new_mode);
+
+//wait(0.2);
+wait(1);
+var status = Read(addr, 0x07, 1);
+
+new_mode = set_bit(new_mode, 7, 0x00);
+new_mode = set_bit(new_mode, 4, 0x01);
+Write(addr, 0x06, new_mode);
+
+
+
+return "VRef: " + vref + " VStep: " + v_step + " VOut: " + vout + " Mode_Status: " + (status) + " VOut Goal:" + vout_goal + " VRef Goal:" + [vref_goal, rg_lsb, rg_msb];

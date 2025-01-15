@@ -9,10 +9,12 @@ PACKAGE_ARCH = ""
 RDEPENDS:${PN} = "\
     devmem2 \
     i2c-tools \
+    python3-smbus2 \
     spitools \
     mdiotool \
     libgpiod-tools \
     openocd \
+    mosquitto \
+    python3-paho-mqtt \
     minicom \
-    tps55288-module \
 "
